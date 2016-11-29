@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #668b99;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+input[type="number"] {
+  width: 32px;
+}
+
+.error {
+  background-color: #ff9999;
+}
+
+.board {
+  background-color: #3d5c5c;
+  outline: 2px solid #000;
+  display: inline-block;
+  margin: 0 10px 10px;
+  overflow: scroll;
+}
+
+.field {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 1px;
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.X:before {
+  content: "X";
+  color: #000066;
+}
+
+.O:before {
+  content: "O";
+  color: #800000;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: #F5F5F5;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #555;
+}
