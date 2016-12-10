@@ -2,12 +2,14 @@
   "name": "gomoku",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://kamilpodlasek.pl/projects/gomoku/",
   "devDependencies": {
     "react-scripts": "0.7.0"
   },
   "dependencies": {
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react": "^15.4.1",
+    "react-custom-scrollbars": "^4.0.0",
+    "react-dom": "^15.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import Board from './Board';
 
-var t0, t1;
-
 class App extends Component {
   constructor() {
     super();
     const startFieldSize = 22;
-    const scrollbarSize = 13;
     const margin = 1;
     const {maxHeight, maxWidth} = this.calculateStartFields(startFieldSize + 2 * margin);
     const startFieldsHeight = maxHeight * startFieldSize + 2 * maxHeight;
     const startFieldWidth = maxWidth * startFieldSize + 2 * maxWidth;
+    const fieldsBg = [];
+    for(let i = 0; i < maxHeight; i++) {
+      fieldsBg[i] = [];
+      for(let j = 0; j < maxWidth; j++) {
+        fieldsBg[i][j] = Math.floor((Math.random() * 5));
+      }
+    }
 
     this.state = {
       height: maxHeight,
@@ -19,18 +23,20 @@ class App extends Component {
       maxHeight: maxHeight,
       maxWidth: maxWidth,
       fieldSize: startFieldSize,
-      scrollbarSize: scrollbarSize,
-      boardHeight: startFieldsHeight + scrollbarSize,
-      boardWidth: startFieldWidth + scrollbarSize,
+      maxBoardHeight: startFieldsHeight + 4,//+ boardInner padding
+      maxBoardWidth: startFieldWidth + 4,
+      boardHeight: startFieldsHeight + 4,
+      boardWidth: startFieldWidth + 4,
       boardScrollTop: 0,
       boardScrollLeft: 0,
       fieldsHeight: startFieldsHeight,
       fieldsWidth: startFieldWidth,
       minRow: 5,
-      turn: 'X',
+      turn: 'x',
       move: 0,
       winner: null,
       fields: [Array(maxHeight).fill(null).map(() => Array(maxWidth).fill(null))],
+      fieldsBg: [fieldsBg],
       winnerFields: null
     }
 
@@ -42,7 +48,7 @@ class App extends Component {
   }
 
   calculateStartFields(fieldSize) {
-    let y = parseInt(window.innerHeight / fieldSize, 10) - 7;
+    let y = parseInt(window.innerHeight / fieldSize, 10) - 3;
     let x = parseInt(window.innerWidth / fieldSize, 10) - 2;
 
     if(y > 50) {
@@ -69,6 +75,8 @@ class App extends Component {
 
     this.setState({
       fieldSize: fieldSize
+    }, () => {//callback
+      this.countDimensions();
     });
   }
 
@@ -90,7 +98,7 @@ class App extends Component {
 
     this.setState({
       move: move,
-      turn: (move % 2 === 0) ? 'X' : 'O',
+      turn: (move % 2 === 0) ? 'x' : 'o',
       winner: null
     });
   }
@@ -111,7 +119,7 @@ class App extends Component {
       if(this.changeField(y, x)) {
         this.setState({
           move: this.state.move + 1,
-          turn: ((this.state.move + 1) % 2 === 0) ? 'X' : 'O'
+          turn: ((this.state.move + 1) % 2 === 0) ? 'x' : 'o'
         });
       }
     }
@@ -260,7 +268,7 @@ class App extends Component {
       width = value;
     }
 
-    //change fields arrays size
+    //change fields array's size
     let fieldsArray = this.state.fields.map(function(fields) {//copy of state.fields
       let difference = 0;
       if(fields.length !== height) {
@@ -298,9 +306,52 @@ class App extends Component {
       return fields;
     });
 
+    //change fieldsBg array's size
+    let fieldsBgArray = this.state.fieldsBg.map(function(fields) {//copy of state.fields
+      let difference = 0;
+      if(fields.length !== height) {
+        difference = fields.length - height;
+        if(difference > 0) {
+          while(difference > 0) {
+            fields.pop();
+            difference--;
+          }
+        } else if(difference < 0) {
+          while(difference < 0) {
+            let fieldsArr = [];
+            for(let i = 0; i < width; i++) {
+              fieldsArr[i] = Math.floor((Math.random() * 5));
+            }
+            fields.push(fieldsArr);
+            difference++;
+          }
+        }
+      } else if(fields[0].length !== width) {
+        difference = fields[0].length - width;
+        if(difference > 0) {
+          while(difference > 0) {
+            for(let row of fields) {
+              row.pop();
+            }
+            difference--;
+          }
+        } else if(difference < 0) {
+          while(difference < 0) {
+            for(let row of fields) {
+              row.push(Math.floor((Math.random() * 5)));
+            }
+            difference++;
+          }
+        }
+      }
+      
+      return fields;
+    });
+
     this.setState({
       [event.target.name]: value,
-      fields: fieldsArray//set updated fields as a state
+      fields: fieldsArray,//set updated fields as a state
+      fieldsBg: fieldsBgArray//set updated fieldsBg as a state
     }, () => {//callback
       this.countDimensions();
     });
@@ -315,20 +366,20 @@ class App extends Component {
       boardHeight = this.state.maxHeight * this.state.fieldSize + 2 * this.state.maxHeight;
       boardScrollTop = (fieldsHeight - boardHeight) / 2;
     } else {
-      boardHeight = fieldsHeight;
+      boardHeight = fieldsHeight > this.state.maxBoardHeight ? this.state.maxBoardHeight : fieldsHeight;
     }
     if(this.state.width > this.state.maxWidth) {
       boardWidth = this.state.maxWidth * this.state.fieldSize + 2 * this.state.maxWidth;
       boardScrollLeft = (fieldsWidth - boardWidth) / 2;
     } else {
-      boardWidth = fieldsWidth;
+      boardWidth = fieldsWidth > this.state.maxBoardWidth ? this.state.maxBoardWidth : fieldsWidth;
     }
-    boardHeight += this.state.scrollbarSize;
-    boardWidth += this.state.scrollbarSize;
+
+    console.log(boardHeight, this.state.maxBoardHeight);
 
     this.setState({
-      boardWidth: boardWidth,
-      boardHeight: boardHeight,
+      boardWidth: boardWidth + 4,//+ boardInner padding
+      boardHeight: boardHeight + 4,
       boardScrollLeft: boardScrollLeft,
       boardScrollTop: boardScrollTop,
       fieldsHeigth: fieldsHeight,
@@ -336,30 +387,26 @@ class App extends Component {
     });
   }
 
-  componentWillUpdate() {
-    t0 = performance.now();
-  }
-
-  componentDidUpdate() {
-    t1 = performance.now();
-    console.log((t1 - t0) + "ms");
-  }
-
   render() {
-    const message = this.state.winner ?
-                    <p>The winner is: {this.state.winner}</p> : <p>Turn: {this.state.turn}</p>;
-
     return (
       <div>
-        <h1>Gomoku</h1>
-        Height: <input type="number" name="height" value={this.state.height} min="5" max="50" onChange={this.changeBoardSize}/>
-        Width: <input type="number" name="width" value={this.state.width} min="5" max="50" onChange={this.changeBoardSize}/>
-        Field size: <input type="number" value={this.state.fieldSize} min="5" max="50" onChange={this.changeFieldSize}/>
-        Move: <input type="number" value={this.state.move + 1} min="1" onChange={this.changeMove}/>
-        <input type="button" value="<" onClick={this.changeMove}/>
-        <input type="button" value=">" onClick={this.changeMove}/>
-        Min. row length to win: <input type="number" value={this.state.minRow} min="3" onChange={this.changeMinRow}/>
-        {message}
+        <header>
+          <div className="logo">
+            <b>Gomoku</b>
+          </div>
+          <div className="settings">
+            <span>Height:<input type="number" name="height" value={this.state.height} min="5" max="50" onChange={this.changeBoardSize}/></span>
+            <span>Width:<input type="number" name="width" value={this.state.width} min="5" max="50" onChange={this.changeBoardSize}/></span>
+            <span>Field size:<input type="number" value={this.state.fieldSize} min="5" max="50" onChange={this.changeFieldSize}/></span>
+            <span>Row length:<input type="number" value={this.state.minRow} min="3" onChange={this.changeMinRow}/></span>
+          </div>
+          <div className="move">
+            <span>Move:<input type="number" value={this.state.move + 1} min="1" onChange={this.changeMove}/>
+            <input type="button" value="<" onClick={this.changeMove}/>
+            <input type="button" value=">" onClick={this.changeMove}/></span>
+            {this.state.winner ? <span>The winner is: <b>{this.state.winner}</b></span> : <span>Turn: <b>{this.state.turn.toUpperCase()}</b></span>}
+          </div>
+        </header>
         <Board
           width={this.state.width}
           height={this.state.height}
@@ -374,6 +421,7 @@ class App extends Component {
           onClick={(y, x) => this.handleClick(y, x)}
           fieldSize={this.state.fieldSize}
           fields={this.state.fields[this.state.move]}
+          fieldsBg={this.state.fieldsBg[0]}
           winnerFields={this.state.winner ? this.state.winnerFields : null}/>
       </div>
     );
