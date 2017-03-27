@@ -38,7 +38,7 @@ class App extends Component {
       fields: [Array(maxHeight).fill(null).map(() => Array(maxWidth).fill(null))],
       fieldsBg: [fieldsBg],
       winnerFields: null
-    }
+    };
 
     this.announceWinner = this.announceWinner.bind(this);
     this.changeFieldSize = this.changeFieldSize.bind(this);
@@ -62,7 +62,7 @@ class App extends Component {
       x = 5;
     }
 
-    return {maxHeight: y, maxWidth: x}
+    return {maxHeight: y, maxWidth: x};
   }
 
   changeFieldSize(event) {
@@ -144,7 +144,7 @@ class App extends Component {
       this.setState({//set updated fields as a state
         fields: fields
       }, () => {//callback
-        this.checkField(y, x)//check if there is a winner
+        this.checkField(y, x);//check if there is a winner
       });
 
       return true;//there was a change
@@ -169,7 +169,7 @@ class App extends Component {
         winnerFields = [{ y: yNew, x: xNew }];
         return false;
       }
-    }
+    };
 
     //VERTICAL
     let y = yNew - 1;
@@ -375,7 +375,7 @@ class App extends Component {
       boardWidth = fieldsWidth > this.state.maxBoardWidth ? this.state.maxBoardWidth : fieldsWidth;
     }
 
-    console.log(boardHeight, this.state.maxBoardHeight);
+    //console.log(boardHeight, this.state.maxBoardHeight);
 
     this.setState({
       boardWidth: boardWidth + 4,//+ boardInner padding

@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+//import ReactDOM from 'react-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Field from './Field';
 
-class Board extends Component {
+class Board extends React.Component {
   isHighlighted(y, x) {
     return this.props.winnerFields.some((obj) => {
       return (obj.y === y && obj.x === x);
@@ -23,7 +23,7 @@ class Board extends Component {
                           onClick={() => this.props.onClick(y, x)}
                   />);
       }
-      board.push(<div key={y}></div>);
+      board.push(<div key={y}/>);
     }
 
     return (

@@ -1,3 +1,3 @@
 Gomoku in React. There is still a lot of work to do with it, but it's working.
 
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+This project uses [react-slingshot](https://github.com/coryhouse/react-slingshot).
